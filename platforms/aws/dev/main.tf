@@ -11,3 +11,17 @@ module "network" {
   availability_zones   = ["eu-central-1a", "eu-central-1b"]
   environment          = var.environment
 }
+
+module "iam_baseline" {
+  source = "../../../modules/aws-iam-baseline"
+
+  environment = var.environment
+
+  admin_principal_arns = [
+    "arn:aws:iam::<your-account-id>:root"
+  ]
+
+  read_only_principal_arns = [
+    "arn:aws:iam::<your-account-id>:root"
+  ]
+}
