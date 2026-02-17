@@ -1,3 +1,10 @@
+module "tags" {
+  source = "../../../modules/tagging"
+
+  environment = var.environment
+  project     = "multicloud-platform-baseline"
+}
+
 locals {
   project_name = "multicloud-platform-baseline"
 }
