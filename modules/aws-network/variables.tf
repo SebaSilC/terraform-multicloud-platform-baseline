@@ -28,3 +28,8 @@ variable "flow_log_retention_days" {
   type        = number
   default     = 30
 }
+
+variable "tags" {
+  description = "Common resource tags"
+  type        = map(string)
+}
