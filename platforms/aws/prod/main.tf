@@ -5,9 +5,9 @@ locals {
 module "network" {
   source = "../../../modules/aws-network"
 
-  vpc_cidr             = "10.0.0.0/16"
-  public_subnet_cidrs  = ["10.0.1.0/24", "10.0.2.0/24"]
-  private_subnet_cidrs = ["10.0.10.0/24", "10.0.20.0/24"]
+  vpc_cidr             = "10.2.0.0/16"
+  public_subnet_cidrs  = ["10.2.1.0/24", "10.2.2.0/24"]
+  private_subnet_cidrs = ["10.2.10.0/24", "10.2.20.0/24"]
   availability_zones   = ["eu-central-1a", "eu-central-1b"]
   environment          = var.environment
 }
