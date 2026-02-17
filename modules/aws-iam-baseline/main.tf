@@ -50,6 +50,11 @@ resource "aws_iam_role" "read_only" {
   })
 }
 
+resource "aws_iam_role_policy_attachment" "read_only_policy" {
+  role       = aws_iam_role.read_only.name
+  policy_arn = "arn:aws:iam::aws:policy/ReadOnlyAccess"
+}
+
 ########################################
 # Guardrail Policy (Explicit Deny Controls)
 ########################################
@@ -76,8 +81,7 @@ resource "aws_iam_policy" "guardrail_deny_policy" {
   })
 }
 
-resource "aws_iam_role_policy_attachment" "read_only_policy" {
-  role       = aws_iam_role.read_only.name
-  policy_arn = "arn:aws:iam::aws:policy/ReadOnlyAccess"
+resource "aws_iam_role_policy_attachment" "guardrail_attachment" {
+  role       = aws_iam_role.break_glass_admin.name
+  policy_arn = aws_iam_policy.guardrail_deny_policy.arn
 }
-
