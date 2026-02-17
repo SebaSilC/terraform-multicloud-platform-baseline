@@ -43,6 +43,7 @@ prod/
 
 .github/workflows/
 terraform-validation.yml  # CI validation & plan pipeline
+```
 
 ---
 
