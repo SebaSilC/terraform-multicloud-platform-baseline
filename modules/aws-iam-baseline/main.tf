@@ -50,6 +50,32 @@ resource "aws_iam_role" "read_only" {
   })
 }
 
+########################################
+# Guardrail Policy (Explicit Deny Controls)
+########################################
+
+resource "aws_iam_policy" "guardrail_deny_policy" {
+  name        = "${var.environment}-guardrail-deny"
+  description = "Prevents disabling audit and logging controls"
+
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Effect = "Deny"
+        Action = [
+          "cloudtrail:DeleteTrail",
+          "cloudtrail:StopLogging",
+          "logs:DeleteLogGroup",
+          "logs:DeleteLogStream",
+          "ec2:DeleteFlowLogs"
+        ]
+        Resource = "*"
+      }
+    ]
+  })
+}
+
 resource "aws_iam_role_policy_attachment" "read_only_policy" {
   role       = aws_iam_role.read_only.name
   policy_arn = "arn:aws:iam::aws:policy/ReadOnlyAccess"
