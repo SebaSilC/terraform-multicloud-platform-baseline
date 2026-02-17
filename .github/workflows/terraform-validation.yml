@@ -1,4 +1,4 @@
-name: Terraform Validation & Security
+name: Terraform Validation & Plan
 
 on:
   pull_request:
@@ -7,12 +7,16 @@ on:
 
 jobs:
   terraform:
-    name: Validate Terraform
+    name: Validate & Plan
     runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        environment: [dev, staging, prod]
 
     defaults:
       run:
-        working-directory: platforms/aws/dev
+        working-directory: platforms/aws/${{ matrix.environment }}
 
     steps:
       - name: Checkout repository
@@ -23,7 +27,7 @@ jobs:
         with:
           terraform_version: 1.6.0
 
-      - name: Terraform Init
+      - name: Terraform Init (no backend)
         run: terraform init -backend=false
 
       - name: Terraform Format Check
@@ -32,12 +36,21 @@ jobs:
       - name: Terraform Validate
         run: terraform validate
 
+      - name: Terraform Plan (no backend)
+        run: terraform plan -out=tfplan -input=false
+
+      - name: Upload Plan Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: tfplan-${{ matrix.environment }}
+          path: platforms/aws/${{ matrix.environment }}/tfplan
+
       - name: Run tfsec
         uses: aquasecurity/tfsec-action@v1.0.3
         with:
-          working_directory: .
+          working_directory: platforms/aws/${{ matrix.environment }}
 
       - name: Run Checkov
         uses: bridgecrewio/checkov-action@v12
         with:
-          directory: .
+          directory: platforms/aws/${{ matrix.environment }}
