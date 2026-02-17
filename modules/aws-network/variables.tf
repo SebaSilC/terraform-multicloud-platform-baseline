@@ -22,3 +22,9 @@ variable "environment" {
   description = "Environment name"
   type        = string
 }
+
+variable "flow_log_retention_days" {
+  description = "Retention period for VPC Flow Logs"
+  type        = number
+  default     = 30
+}
