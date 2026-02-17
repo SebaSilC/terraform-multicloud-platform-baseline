@@ -25,3 +25,9 @@ module "iam_baseline" {
     "arn:aws:iam::<your-account-id>:root"
   ]
 }
+
+module "logging_baseline" {
+  source = "../../../modules/aws-logging-baseline"
+
+  environment = var.environment
+}
