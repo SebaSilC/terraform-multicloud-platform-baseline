@@ -26,14 +26,13 @@ The structure is designed to scale across environments and extend to additional 
 ## Repository Structure
 
 ```
-bootstrap/
-aws/                      # Remote state infrastructure
+bootstrap/aws/                              # Remote state infrastructure
 
 modules/
-aws-network/              # VPC, subnets, routing, NAT, flow logs
-aws-iam-baseline/         # Break-glass admin, read-only roles, guardrails
-aws-logging-baseline/     # CloudTrail & centralized audit bucket
-tagging/                  # Centralized tagging abstraction
+aws-network/                                # VPC, subnets, routing, NAT, flow logs
+aws-iam-baseline/                           # Break-glass admin, read-only roles, guardrails
+aws-logging-baseline/                       # CloudTrail & centralized audit bucket
+tagging/                                    # Centralized tagging abstraction
 
 platforms/
 aws/
@@ -41,8 +40,7 @@ dev/
 staging/
 prod/
 
-.github/workflows/
-terraform-validation.yml  # CI validation & plan pipeline
+.github/workflows/terraform-validation.yml  # CI validation & plan pipeline
 ```
 
 ---
@@ -59,13 +57,15 @@ Each environment:
 
 ---
 
-## State isolation:
+## State isolation
 
 ```
 aws/dev/platform.tfstate
 aws/staging/platform.tfstate
 aws/prod/platform.tfstate
 ```
+
+Each environment maintains an isolated state file to prevent cross-environment drift and unintended resource modification.
 
 ---
 
