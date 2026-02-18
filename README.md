@@ -6,7 +6,9 @@ This repository reflects platform engineering practices rather than lab-style de
 
 ---
 
-## Architecture Overview
+## Architecture Design
+
+![VPC Architecture](diagram.png)
 
 This project implements a layered platform foundation:
 
