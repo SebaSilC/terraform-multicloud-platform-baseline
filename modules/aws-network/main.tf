@@ -7,12 +7,9 @@ resource "aws_vpc" "this" {
   enable_dns_support   = true
   enable_dns_hostnames = true
 
-  tags = merge(
-    var.tags,
-    {
-      Name = "${var.environment}-vpc"
-    }
-  )
+  tags = merge(var.tags, {
+    Name = "${var.environment}-vpc"
+  })
 }
 
 ########################################
@@ -22,12 +19,9 @@ resource "aws_vpc" "this" {
 resource "aws_internet_gateway" "this" {
   vpc_id = aws_vpc.this.id
 
-  tags = merge(
-    var.tags,
-    {
-      Name = "${var.environment}-igw"
-    }
-  )
+  tags = merge(var.tags, {
+    Name = "${var.environment}-igw"
+  })
 }
 
 ########################################
@@ -42,13 +36,10 @@ resource "aws_subnet" "public" {
   availability_zone       = each.value
   map_public_ip_on_launch = true
 
-  tags = merge(
-    var.tags,
-    {
-      Name = "${var.environment}-public-${each.value}"
-      Tier = "public"
-    }
-  )
+  tags = merge(var.tags, {
+    Name = "${var.environment}-public-${each.value}"
+    Tier = "public"
+  })
 }
 
 ########################################
@@ -62,42 +53,33 @@ resource "aws_subnet" "private" {
   cidr_block        = each.key
   availability_zone = each.value
 
-  tags = merge(
-    var.tags,
-    {
-      Name = "${var.environment}-private-${each.value}"
-      Tier = "private"
-    }
-  )
+  tags = merge(var.tags, {
+    Name = "${var.environment}-private-${each.value}"
+    Tier = "private"
+  })
 }
 
 ########################################
-# NAT Gateway (Single-AZ Baseline)
+# NAT Gateway
 ########################################
 
 resource "aws_eip" "nat" {
   domain = "vpc"
 
-  tags = merge(
-    var.tags,
-    {
-      Name = "${var.environment}-nat-eip"
-    }
-  )
+  tags = merge(var.tags, {
+    Name = "${var.environment}-nat-eip"
+  })
 }
 
 resource "aws_nat_gateway" "this" {
   allocation_id = aws_eip.nat.id
   subnet_id     = values(aws_subnet.public)[0].id
 
-  tags = merge(
-    var.tags,
-    {
-      Name = "${var.environment}-nat"
-    }
-  )
-
   depends_on = [aws_internet_gateway.this]
+
+  tags = merge(var.tags, {
+    Name = "${var.environment}-nat"
+  })
 }
 
 ########################################
@@ -107,12 +89,9 @@ resource "aws_nat_gateway" "this" {
 resource "aws_route_table" "public" {
   vpc_id = aws_vpc.this.id
 
-  tags = merge(
-    var.tags,
-    {
-      Name = "${var.environment}-public-rt"
-    }
-  )
+  tags = merge(var.tags, {
+    Name = "${var.environment}-public-rt"
+  })
 }
 
 resource "aws_route" "public_internet_access" {
@@ -135,12 +114,9 @@ resource "aws_route_table_association" "public" {
 resource "aws_route_table" "private" {
   vpc_id = aws_vpc.this.id
 
-  tags = merge(
-    var.tags,
-    {
-      Name = "${var.environment}-private-rt"
-    }
-  )
+  tags = merge(var.tags, {
+    Name = "${var.environment}-private-rt"
+  })
 }
 
 resource "aws_route" "private_nat_access" {
@@ -164,12 +140,9 @@ resource "aws_cloudwatch_log_group" "vpc_flow_logs" {
   name              = "/aws/vpc/${var.environment}/flow-logs"
   retention_in_days = var.flow_log_retention_days
 
-  tags = merge(
-    var.tags,
-    {
-      Name = "${var.environment}-vpc-flow-logs"
-    }
-  )
+  tags = merge(var.tags, {
+    Name = "${var.environment}-vpc-flow-logs"
+  })
 }
 
 resource "aws_iam_role" "vpc_flow_logs_role" {
@@ -177,15 +150,13 @@ resource "aws_iam_role" "vpc_flow_logs_role" {
 
   assume_role_policy = jsonencode({
     Version = "2012-10-17"
-    Statement = [
-      {
-        Effect = "Allow"
-        Principal = {
-          Service = "vpc-flow-logs.amazonaws.com"
-        }
-        Action = "sts:AssumeRole"
+    Statement = [{
+      Effect = "Allow"
+      Principal = {
+        Service = "vpc-flow-logs.amazonaws.com"
       }
-    ]
+      Action = "sts:AssumeRole"
+    }]
   })
 
   tags = var.tags
@@ -197,16 +168,14 @@ resource "aws_iam_role_policy" "vpc_flow_logs_policy" {
 
   policy = jsonencode({
     Version = "2012-10-17"
-    Statement = [
-      {
-        Effect = "Allow"
-        Action = [
-          "logs:CreateLogStream",
-          "logs:PutLogEvents"
-        ]
-        Resource = "${aws_cloudwatch_log_group.vpc_flow_logs.arn}:*"
-      }
-    ]
+    Statement = [{
+      Effect = "Allow"
+      Action = [
+        "logs:CreateLogStream",
+        "logs:PutLogEvents"
+      ]
+      Resource = "${aws_cloudwatch_log_group.vpc_flow_logs.arn}:*"
+    }]
   })
 }
 
