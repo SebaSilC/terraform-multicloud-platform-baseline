@@ -1,7 +1,6 @@
 variable "region" {
   description = "AWS region for bootstrap resources"
   type        = string
-  default     = "eu-central-1"
 }
 
 variable "state_bucket_name" {
@@ -12,5 +11,4 @@ variable "state_bucket_name" {
 variable "lock_table_name" {
   description = "DynamoDB table for Terraform state locking"
   type        = string
-  default     = "terraform-state-locks"
 }
