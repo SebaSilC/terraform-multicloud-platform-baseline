@@ -22,6 +22,8 @@ resource "aws_iam_role" "break_glass_admin" {
       }
     ]
   })
+
+  tags = var.tags
 }
 
 resource "aws_iam_role_policy_attachment" "admin_policy" {
@@ -48,6 +50,8 @@ resource "aws_iam_role" "read_only" {
       }
     ]
   })
+
+  tags = var.tags
 }
 
 resource "aws_iam_role_policy_attachment" "read_only_policy" {
@@ -56,10 +60,10 @@ resource "aws_iam_role_policy_attachment" "read_only_policy" {
 }
 
 ########################################
-# Guardrail Policy (Explicit Deny Controls)
+# Guardrail Policy
 ########################################
 
-resource "aws_iam_policy" "guardrail_deny_policy" {
+resource "aws_iam_policy" "guardrail_deny" {
   name        = "${var.environment}-guardrail-deny"
   description = "Prevents disabling audit and logging controls"
 
@@ -79,9 +83,11 @@ resource "aws_iam_policy" "guardrail_deny_policy" {
       }
     ]
   })
+
+  tags = var.tags
 }
 
 resource "aws_iam_role_policy_attachment" "guardrail_attachment" {
   role       = aws_iam_role.break_glass_admin.name
-  policy_arn = aws_iam_policy.guardrail_deny_policy.arn
+  policy_arn = aws_iam_policy.guardrail_deny.arn
 }
