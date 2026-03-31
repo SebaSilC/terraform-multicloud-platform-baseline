@@ -9,17 +9,20 @@ resource "aws_s3_bucket" "log_bucket" {
     prevent_destroy = true
   }
 
-  tags = {
-    Name        = "${var.environment}-audit-logs"
-    Environment = var.environment
-  }
+  tags = merge(
+    var.tags,
+    {
+      Name        = "${var.environment}-audit-logs"
+      Environment = var.environment
+    }
+  )
 }
 
 ########################################
 # Versioning
 ########################################
 
-resource "aws_s3_bucket_versioning" "versioning" {
+resource "aws_s3_bucket_versioning" "this" {
   bucket = aws_s3_bucket.log_bucket.id
 
   versioning_configuration {
@@ -31,7 +34,7 @@ resource "aws_s3_bucket_versioning" "versioning" {
 # Encryption
 ########################################
 
-resource "aws_s3_bucket_server_side_encryption_configuration" "encryption" {
+resource "aws_s3_bucket_server_side_encryption_configuration" "this" {
   bucket = aws_s3_bucket.log_bucket.id
 
   rule {
@@ -45,12 +48,12 @@ resource "aws_s3_bucket_server_side_encryption_configuration" "encryption" {
 # Public Access Block
 ########################################
 
-resource "aws_s3_bucket_public_access_block" "block_public" {
+resource "aws_s3_bucket_public_access_block" "this" {
   bucket = aws_s3_bucket.log_bucket.id
 
-  block_public_acls   = true
-  block_public_policy = true
-  ignore_public_acls  = true
+  block_public_acls       = true
+  block_public_policy     = true
+  ignore_public_acls      = true
   restrict_public_buckets = true
 }
 
@@ -71,6 +74,8 @@ resource "aws_cloudtrail" "this" {
   }
 
   depends_on = [
-    aws_s3_bucket_public_access_block.block_public
+    aws_s3_bucket_public_access_block.this
   ]
+
+  tags = var.tags
 }
