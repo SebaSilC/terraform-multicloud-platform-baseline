@@ -1,3 +1,3 @@
 output "tags" {
-  value = local.merged_tags
+  value = local.tags
 }
