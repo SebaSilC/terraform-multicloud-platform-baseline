@@ -2,6 +2,10 @@ provider "aws" {
   region = var.region
 }
 
+locals {
+  platform = "platform"
+}
+
 resource "aws_s3_bucket" "terraform_state" {
   bucket = var.state_bucket_name
 
@@ -10,12 +14,13 @@ resource "aws_s3_bucket" "terraform_state" {
   }
 
   tags = {
-    Name        = "terraform-state"
-    Environment = "platform"
+    Name        = "${local.platform}-tf-state"
+    Environment = local.platform
+    ManagedBy   = "Terraform"
   }
 }
 
-resource "aws_s3_bucket_versioning" "versioning" {
+resource "aws_s3_bucket_versioning" "this" {
   bucket = aws_s3_bucket.terraform_state.id
 
   versioning_configuration {
@@ -23,7 +28,7 @@ resource "aws_s3_bucket_versioning" "versioning" {
   }
 }
 
-resource "aws_s3_bucket_server_side_encryption_configuration" "encryption" {
+resource "aws_s3_bucket_server_side_encryption_configuration" "this" {
   bucket = aws_s3_bucket.terraform_state.id
 
   rule {
@@ -33,12 +38,12 @@ resource "aws_s3_bucket_server_side_encryption_configuration" "encryption" {
   }
 }
 
-resource "aws_s3_bucket_public_access_block" "block_public" {
+resource "aws_s3_bucket_public_access_block" "this" {
   bucket = aws_s3_bucket.terraform_state.id
 
-  block_public_acls   = true
-  block_public_policy = true
-  ignore_public_acls  = true
+  block_public_acls       = true
+  block_public_policy     = true
+  ignore_public_acls      = true
   restrict_public_buckets = true
 }
 
@@ -53,6 +58,7 @@ resource "aws_dynamodb_table" "terraform_locks" {
   }
 
   tags = {
-    Name = "terraform-lock-table"
+    Name      = "${local.platform}-tf-locks"
+    ManagedBy = "Terraform"
   }
 }
