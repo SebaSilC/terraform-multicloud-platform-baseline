@@ -1,52 +1,30 @@
 module "tags" {
   source = "../../../modules/tagging"
 
-  environment = var.environment
-  project     = "multicloud-platform-baseline"
+  environment = var.context.environment
+  project     = var.context.platform
 }
 
-locals {
-  project_name = "multicloud-platform-baseline"
-}
-
-module "network" {
+module "networking" {
   source = "../../../modules/aws-network"
 
-  vpc_cidr             = "10.0.0.0/16"
-  public_subnet_cidrs  = ["10.0.1.0/24", "10.0.2.0/24"]
-  private_subnet_cidrs = ["10.0.10.0/24", "10.0.20.0/24"]
-  availability_zones   = ["eu-central-1a", "eu-central-1b"]
-  environment          = var.environment
+  config      = var.network
+  environment = var.context.environment
+  tags        = module.tags.tags
 }
 
-module "network" {
-  source = "../../../modules/aws-network"
-
-  vpc_cidr             = "10.0.0.0/16"
-  public_subnet_cidrs  = ["10.0.1.0/24", "10.0.2.0/24"]
-  private_subnet_cidrs = ["10.0.10.0/24", "10.0.20.0/24"]
-  availability_zones   = ["eu-central-1a", "eu-central-1b"]
-  environment          = var.environment
-
-  tags = module.tags.tags
-}
-
-module "iam_baseline" {
+module "iam" {
   source = "../../../modules/aws-iam-baseline"
 
-  environment = var.environment
+  environment = var.context.environment
 
-  admin_principal_arns = [
-    "arn:aws:iam::<your-account-id>:root"
-  ]
-
-  read_only_principal_arns = [
-    "arn:aws:iam::<your-account-id>:root"
-  ]
+  admin_principal_arns     = var.iam.admin_principal_arns
+  read_only_principal_arns = var.iam.read_only_principal_arns
 }
 
-module "logging_baseline" {
+module "audit_logging" {
   source = "../../../modules/aws-logging-baseline"
 
-  environment = var.environment
+  environment = var.context.environment
+  tags        = module.tags.tags
 }
