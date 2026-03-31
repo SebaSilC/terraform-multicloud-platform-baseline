@@ -8,3 +8,9 @@ variable "log_retention_days" {
   type        = number
   default     = 90
 }
+
+variable "tags" {
+  description = "Common resource tags"
+  type        = map(string)
+  default     = {}
+}
