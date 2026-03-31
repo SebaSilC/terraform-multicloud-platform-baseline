@@ -1,10 +1,10 @@
 provider "aws" {
-  region = var.region
+  region = var.context.region
 
   default_tags {
     tags = {
-      Environment = var.environment
-      Project     = "multicloud-platform-baseline"
+      Environment = var.context.environment
+      Platform    = var.context.platform
       ManagedBy   = "Terraform"
     }
   }
