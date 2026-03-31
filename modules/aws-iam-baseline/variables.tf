@@ -12,3 +12,9 @@ variable "read_only_principal_arns" {
   description = "ARNs allowed to assume read-only role"
   type        = list(string)
 }
+
+variable "tags" {
+  description = "Common resource tags"
+  type        = map(string)
+  default     = {}
+}
